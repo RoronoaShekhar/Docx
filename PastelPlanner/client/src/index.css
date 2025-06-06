@@ -1,0 +1,348 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+Pro:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 210 11% 98%; /* #FDFDFD - Soft off-white base */
+  --foreground: 245 8% 37%; /* #4F4F60 - Dark pastel gray */
+  --muted: 245 15% 80%; /* #AAAAC0 - Soft gray-violet for labels */
+  --muted-foreground: 245 8% 50%; /* Muted text */
+  --popover: 0 0% 100%; /* #FFFFFF - White modals */
+  --popover-foreground: 245 8% 37%; /* #4F4F60 */
+  --card: 0 0% 100%; /* #FFFFFF */
+  --card-foreground: 245 8% 37%; /* #4F4F60 */
+  --border: 280 20% 87%; /* #D9CCE3 - Muted lavender borders */
+  --input: 280 20% 87%; /* #D9CCE3 */
+  --primary: 280 18% 88%; /* #E9E4F0 - Light lavender tab switcher */
+  --primary-foreground: 245 8% 25%; /* Dark text on primary */
+  --secondary: 280 38% 85%; /* #D2BFFF - Soft plum active tab */
+  --secondary-foreground: 245 8% 25%; /* Dark text on secondary */
+  --accent: 130 35% 88%; /* #D9F7E5 - Gentle mint highlight */
+  --accent-foreground: 245 8% 25%; /* Dark text on accent */
+  --destructive: 0 84% 60%; /* Red for destructive actions */
+  --destructive-foreground: 0 0% 98%; /* White text on red */
+  --ring: 280 38% 85%; /* #D2BFFF - Soft plum focus */
+  --radius: 0.5rem;
+
+  /* Exact Solfr specifications */
+  --calendar-bg: 35 60% 93%; /* #FFEEDD - Pale peach calendar */
+  --selected-date: 130 35% 88%; /* #D9F7E5 - Gentle mint highlight */
+  --holiday-btn: 15 55% 83%; /* #FBC4AB - Pastel coral button */
+  --modal-textarea: 48 60% 96%; /* #FFF8E7 - Cream text areas */
+  --save-btn: 200 40% 87%; /* #C9E4F6 - Pale blue save button */
+  --save-btn-hover: 200 45% 84%; /* #AED6F1 - Slightly darker hover */
+  
+  /* Legacy support - no section-specific backgrounds needed */
+  --school-bg: 210 11% 98%; /* Same as base background */
+  --school-accent: 280 18% 88%; /* Light lavender */
+  --whatidid-bg: 210 11% 98%; /* Same as base background */
+  --whatidid-accent: 130 35% 88%; /* Gentle mint */
+}
+
+.dark {
+  --background: 15 23 42; /* #0F172A */
+  --foreground: 248 250 252; /* #F8FAFC */
+  --muted: 30 41 59; /* #1E293B */
+  --muted-foreground: 148 163 184; /* #94A3B8 */
+  --popover: 15 23 42; /* #0F172A */
+  --popover-foreground: 248 250 252; /* #F8FAFC */
+  --card: 15 23 42; /* #0F172A */
+  --card-foreground: 248 250 252; /* #F8FAFC */
+  --border: 51 65 85; /* #334155 */
+  --input: 51 65 85; /* #334155 */
+  --primary: 168 230 207; /* #A8E6CF */
+  --primary-foreground: 15 23 42; /* #0F172A */
+  --secondary: 255 211 225; /* #FFD3E1 */
+  --secondary-foreground: 15 23 42; /* #0F172A */
+  --accent: 199 206 234; /* #C7CEEA */
+  --accent-foreground: 15 23 42; /* #0F172A */
+  --destructive: 239 68 68; /* #EF4444 */
+  --destructive-foreground: 248 250 252; /* #F8FAFC */
+  --ring: 168 230 207; /* #A8E6CF */
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+    font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    background: hsl(var(--background));
+    min-height: 100vh;
+    font-weight: 300;
+    letter-spacing: 0.01em;
+    font-size: 16px;
+  }
+
+  @media (max-width: 768px) {
+    body {
+      font-size: 14px;
+    }
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 400;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+
+  .title-font {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 400;
+  }
+
+  .body-font {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 300;
+  }
+
+  .label-font {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 400;
+    font-size: 1rem;
+  }
+
+  textarea {
+    font-family: inherit;
+    resize: none;
+    transition: height 0.2s ease;
+  }
+
+  .calendar-day {
+    @apply aspect-square flex items-center justify-center rounded-lg text-sm font-normal transition-all duration-200 cursor-pointer relative;
+    background: hsl(var(--calendar-bg)); /* #FFEEDD - Pale peach calendar */
+    border: 1px solid hsl(var(--border));
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 300;
+    color: hsl(var(--foreground)); /* #4F4F60 - Dark pastel gray */
+    min-height: 40px;
+  }
+
+  @media (max-width: 768px) {
+    .calendar-day {
+      @apply text-xs;
+      min-height: 35px;
+    }
+  }
+
+  .calendar-day:hover {
+    transform: none;
+    box-shadow: none;
+    background: hsl(var(--selected-date)); /* #D9F7E5 - Gentle mint highlight */
+  }
+
+  .calendar-day.disabled {
+    @apply cursor-not-allowed;
+    background: hsl(var(--muted));
+    color: hsl(var(--muted-foreground));
+  }
+
+  .calendar-day.disabled:hover {
+    background: hsl(var(--muted));
+  }
+
+  .calendar-day.empty {
+    @apply cursor-default;
+    background: transparent;
+    border: none;
+  }
+
+  .calendar-day.empty:hover {
+    background: transparent;
+  }
+
+  .calendar-day.today {
+    @apply font-medium;
+    border: 2px solid hsl(var(--foreground));
+    background: hsl(var(--selected-date)); /* #D9F7E5 - Gentle mint highlight */
+  }
+
+  .calendar-day.clickable-school {
+    background: hsl(var(--calendar-bg));
+  }
+
+  .calendar-day.clickable-school:hover {
+    background: hsl(var(--selected-date)); /* #D9F7E5 - Gentle mint highlight */
+  }
+
+  .calendar-day.clickable-whatidid {
+    background: hsl(var(--calendar-bg));
+  }
+
+  .calendar-day.clickable-whatidid:hover {
+    background: hsl(var(--selected-date)); /* #D9F7E5 - Gentle mint highlight */
+  }
+
+  .modal-enter {
+    @apply opacity-0 scale-95;
+  }
+
+  .modal-enter-active {
+    @apply opacity-100 scale-100 transition-all duration-300 ease-out;
+  }
+
+  .modal-exit {
+    @apply opacity-100 scale-100;
+  }
+
+  .modal-exit-active {
+    @apply opacity-0 scale-95 transition-all duration-300 ease-in;
+  }
+
+  .flat-button {
+    @apply px-6 py-3 rounded-lg font-normal transition-colors duration-200 cursor-pointer;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 400;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .flat-button {
+      @apply px-4 py-2 text-sm;
+      font-size: 0.875rem;
+    }
+  }
+
+  .flat-button:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .flat-button.holiday {
+    background: hsl(var(--holiday-btn)); /* #FBC4AB - Pastel coral */
+    color: white;
+  }
+
+  .flat-button.holiday:hover {
+    background: hsl(var(--holiday-btn) / 0.9);
+  }
+
+  .flat-button.special {
+    background: hsl(var(--save-btn)); /* #C9E4F6 - Pale blue save button */
+    color: hsl(var(--foreground));
+  }
+
+  .flat-button.special:hover {
+    background: hsl(var(--save-btn-hover)); /* #AED6F1 - Slightly darker hover */
+  }
+
+  /* Modal styling with exact Solfr specifications */
+  .modal-textarea {
+    background: hsl(var(--modal-textarea)) !important; /* #FFF8E7 - Cream text areas */
+    border: 1px solid hsl(var(--border)) !important; /* #D9CCE3 - Muted lavender borders */
+    color: hsl(var(--foreground)) !important; /* #4F4F60 - Dark pastel gray text */
+  }
+
+  .modal-textarea:focus {
+    border-color: hsl(var(--ring)) !important;
+    box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2) !important;
+  }
+
+  .period-label {
+    color: hsl(var(--muted)) !important; /* #AAAAC0 - Soft gray-violet for labels */
+  }
+
+  .save-button-enter {
+    @apply opacity-0 translate-y-2;
+  }
+
+  .save-button-enter-active {
+    @apply opacity-100 translate-y-0 transition-all duration-300 ease-out;
+  }
+
+  .save-button-exit {
+    @apply opacity-100 translate-y-0;
+  }
+
+  .save-button-exit-active {
+    @apply opacity-0 translate-y-2 transition-all duration-300 ease-in;
+  }
+}
+
+/* Custom pastel utility classes */
+.bg-pastel-mint {
+  background-color: hsl(var(--pastel-mint));
+}
+
+.bg-pastel-pink {
+  background-color: hsl(var(--pastel-pink));
+}
+
+.bg-pastel-lavender {
+  background-color: hsl(var(--pastel-lavender));
+}
+
+.bg-pastel-peach {
+  background-color: hsl(var(--pastel-peach));
+}
+
+.bg-pastel-yellow {
+  background-color: hsl(var(--pastel-yellow));
+}
+
+.text-pastel-mint {
+  color: hsl(var(--pastel-mint));
+}
+
+.text-pastel-pink {
+  color: hsl(var(--pastel-pink));
+}
+
+.text-pastel-lavender {
+  color: hsl(var(--pastel-lavender));
+}
+
+.border-pastel-mint {
+  border-color: hsl(var(--pastel-mint));
+}
+
+.border-pastel-pink {
+  border-color: hsl(var(--pastel-pink));
+}
+
+.border-pastel-lavender {
+  border-color: hsl(var(--pastel-lavender));
+}
+
+.ring-pastel-mint {
+  --tw-ring-color: hsl(var(--pastel-mint));
+}
+
+.ring-pastel-pink {
+  --tw-ring-color: hsl(var(--pastel-pink));
+}
+
+.ring-pastel-lavender {
+  --tw-ring-color: hsl(var(--pastel-lavender));
+}
+
+.focus\:ring-pastel-mint:focus {
+  --tw-ring-color: hsl(var(--pastel-mint));
+}
+
+.focus\:ring-pastel-pink:focus {
+  --tw-ring-color: hsl(var(--pastel-pink));
+}
+
+.focus\:ring-pastel-lavender:focus {
+  --tw-ring-color: hsl(var(--pastel-lavender));
+}
+
+.hover\:bg-pastel-mint\/20:hover {
+  background-color: hsl(var(--pastel-mint) / 0.2);
+}
+
+.hover\:bg-pastel-pink\/20:hover {
+  background-color: hsl(var(--pastel-pink) / 0.2);
+}
+
+.hover\:bg-pastel-lavender\/20:hover {
+  background-color: hsl(var(--pastel-lavender) / 0.2);
+}
