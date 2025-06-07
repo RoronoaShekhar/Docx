@@ -176,7 +176,7 @@ export default function Home() {
               className="flat-button holiday px-6 sm:px-12 py-3 sm:py-4 text-base sm:text-lg"
 
             >
-              {activeSection === 'school' ? 'Holiday Homework ' : 'What I Had Done'}
+              {activeSection === 'school' ? 'Holiday Homework' : 'What I Had Done'}
             </button>
           </div>
         )}
