@@ -8,7 +8,7 @@ interface CalendarProps {
 
 export default function Calendar({ currentMonth, onDateClick, activeSection }: CalendarProps) {
   const today = new Date();
-  const minDate = new Date(2024, 5, 16); // June 16, 2024
+  const minDate = new Date(2025, 5, 16); // June 16, 2024
 
   const getDaysInMonth = () => {
     const firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
