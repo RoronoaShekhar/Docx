@@ -97,7 +97,8 @@ export default function Home() {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-normal text-foreground title-font">CampusDocx</h1>
-              <p className="text-sm text-muted-foreground mt-1 body-font">Answering the biggest problem of the era , ~ Bhai Aaj Kya Hua? ~</></p>
+              <p className="text-sm text-muted-foreground mt-1 body-font">Answering the biggest problem ... ~ Bhai Aaj Kya Hua? ~</p>
+
             </div>
             <div className="flex items-center gap-4">
               <AnimatePresence>
