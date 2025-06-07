@@ -96,8 +96,8 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-3xl font-normal text-foreground title-font">EduTracker</h1>
-              <p className="text-sm text-muted-foreground mt-1 body-font">Educational Progress Calendar</p>
+              <h1 className="text-3xl font-normal text-foreground title-font">CampusDocx</h1>
+              <p className="text-sm text-muted-foreground mt-1 body-font">Answering the biggest problem of the era , <Bhai Aaj Kya Hua?></></p>
             </div>
             <div className="flex items-center gap-4">
               <AnimatePresence>
@@ -139,12 +139,12 @@ export default function Home() {
         {/* Calendar Section */}
         <div className="text-center mb-6 sm:mb-8">
           <h2 className="text-xl sm:text-2xl font-normal text-foreground mb-2 title-font">
-            {activeSection === 'school' ? 'School Calendar' : 'What I Did Calendar'}
+            {activeSection === 'school' ? 'Bhai Aaj School me Kya hua tha ?' : 'Bhai Syllabus Kha tak hua ?'}
           </h2>
           <p className="text-sm sm:text-base text-muted-foreground body-font">
             {activeSection === 'school' 
-              ? 'Track your daily school periods and activities'
-              : 'Track your achievements and activities'
+              ? 'Answer to Bhai <Aaj School me Kya hua tha ?> Also , ye 2024 ko ignore karna(me_ab_debug_nahi_karugna_bhot_time_waste_hai'
+              : 'Bhai Syllabus Kha tak hua ?> , ye 2024 ko ignore karna(me_ab_debug_nahi_karugna_bhot_time_waste_hai'
             }
           </p>
         </div>
@@ -176,7 +176,7 @@ export default function Home() {
               className="flat-button holiday px-6 sm:px-12 py-3 sm:py-4 text-base sm:text-lg"
 
             >
-              {activeSection === 'school' ? 'Holiday Homework' : 'What I Had Done'}
+              {activeSection === 'school' ? 'Holiday Homework ' : 'What I Had Done'}
             </button>
           </div>
         )}
