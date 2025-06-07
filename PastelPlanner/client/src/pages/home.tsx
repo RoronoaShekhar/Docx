@@ -97,7 +97,7 @@ export default function Home() {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-normal text-foreground title-font">CampusDocx</h1>
-              <p className="text-sm text-muted-foreground mt-1 body-font">Answering the biggest problem of the era , <Bhai Aaj Kya Hua?></></p>
+              <p className="text-sm text-muted-foreground mt-1 body-font">Answering the biggest problem of the era , ~ Bhai Aaj Kya Hua? ~</></p>
             </div>
             <div className="flex items-center gap-4">
               <AnimatePresence>
@@ -143,8 +143,8 @@ export default function Home() {
           </h2>
           <p className="text-sm sm:text-base text-muted-foreground body-font">
             {activeSection === 'school' 
-              ? 'Answer to Bhai <Aaj School me Kya hua tha ?> Also , ye 2024 ko ignore karna(me_ab_debug_nahi_karugna_bhot_time_waste_hai'
-              : 'Bhai Syllabus Kha tak hua ?> , ye 2024 ko ignore karna(me_ab_debug_nahi_karugna_bhot_time_waste_hai'
+              ? 'Answer to ~ Bhai Aaj School me Kya hua tha ? ~ Also , ye 2024 ko ignore karna(me_ab_debug_nahi_karugna_bhot_time_waste_hai)'
+              : 'Answer to ~ Bhai Syllabus Kha tak hua ? ~ , ye 2024 ko ignore karna(me_ab_debug_nahi_karugna_bhot_time_waste_hai)'
             }
           </p>
         </div>
