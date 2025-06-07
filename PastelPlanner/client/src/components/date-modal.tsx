@@ -60,6 +60,19 @@ export default function DateModal({ date, section, isAdmin, onClose, onContentCh
         handleClose();
       }
     };
+  useEffect(() => {
+    if (!formData) return;
+  
+    const timeout = setTimeout(() => {
+      const textareas = modalRef.current?.querySelectorAll("textarea");
+      textareas?.forEach((ta) => {
+        ta.style.height = "auto";
+        ta.style.height = Math.max(ta.scrollHeight, 44) + "px";
+      });
+    }, 100); // wait briefly to ensure DOM updates
+
+  return () => clearTimeout(timeout);
+}, [formData]);
 
     const handleClickOutside = (e: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
@@ -119,7 +132,7 @@ export default function DateModal({ date, section, isAdmin, onClose, onContentCh
   if (isLoading) {
     return (
       <motion.div 
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+        className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
       >
@@ -146,7 +159,7 @@ export default function DateModal({ date, section, isAdmin, onClose, onContentCh
         >
           <motion.div 
             ref={modalRef}
-            className="bg-white/95 backdrop-blur-lg rounded-2xl sm:rounded-3xl shadow-2xl w-full max-w-xs sm:max-w-2xl mx-2 sm:mx-4 max-h-[95vh] sm:max-h-[90vh] overflow-hidden border border-white/30"
+            className="bg-white rounded-xl sm:rounded-2xl shadow-xl w-[95%] sm:w-[90%] max-w-5xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden border border-white/30"
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -194,7 +207,7 @@ export default function DateModal({ date, section, isAdmin, onClose, onContentCh
                         {periodLabels[period as keyof typeof periodLabels]}
                       </Label>
                       <Textarea
-                        className={`modal-textarea resize-none overflow-hidden transition-all duration-200 body-font ${!isAdmin ? 'cursor-not-allowed opacity-60' : ''}`}
+                        className={`modal-textarea text-black placeholder:text-gray-500 resize-none overflow-hidden transition-all duration-200 body-font ${!isAdmin ? 'cursor-not-allowed opacity-60' : ''}`}
                         value={formData[period] || ''}
                         onChange={(e) => {
                           handleInputChange(period, e.target.value);
@@ -221,7 +234,7 @@ export default function DateModal({ date, section, isAdmin, onClose, onContentCh
                         {activityLabels[activity as keyof typeof activityLabels]}
                       </Label>
                       <Textarea
-                        className={`modal-textarea resize-none overflow-hidden transition-all duration-200 body-font ${!isAdmin ? 'cursor-not-allowed opacity-60' : ''}`}
+                        className={`modal-textarea text-black placeholder:text-gray-500 resize-none overflow-hidden transition-all duration-200 body-font ${!isAdmin ? 'cursor-not-allowed opacity-60' : ''}`}
                         value={formData[activity] || ''}
                         onChange={(e) => {
                           handleInputChange(activity, e.target.value);
