@@ -54,25 +54,29 @@ export default function DateModal({ date, section, isAdmin, onClose, onContentCh
     }
   }, [data]);
 
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        handleClose();
-      }
-    };
-  useEffect(() => {
-    if (!formData) return;
-  
-    const timeout = setTimeout(() => {
-      const textareas = modalRef.current?.querySelectorAll("textarea");
-      textareas?.forEach((ta) => {
-        ta.style.height = "auto";
-        ta.style.height = Math.max(ta.scrollHeight, 44) + "px";
-      });
-    }, 100); // wait briefly to ensure DOM updates
+// ✅ Auto-expand textarea after formData is set
+useEffect(() => {
+  if (!formData || !modalRef.current) return;
+
+  const timeout = setTimeout(() => {
+    const textareas = modalRef.current!.querySelectorAll("textarea");
+
+    textareas.forEach((ta) => {
+      ta.style.height = "auto";
+      ta.style.height = Math.max(ta.scrollHeight, 44) + "px";
+    });
+  }, 50);
 
   return () => clearTimeout(timeout);
 }, [formData]);
+
+// ✅ Keep this one separate — for escape + outside click
+useEffect(() => {
+  const handleEscape = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      handleClose();
+    }
+  };
 
     const handleClickOutside = (e: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
