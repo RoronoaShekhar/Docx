@@ -24,9 +24,9 @@ const autoExpandTextarea = (textarea: HTMLTextAreaElement) => { textarea.style.h
 
 const schoolPeriods = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8']; const whatididActivities = ['ioqm', 'nsep', 'schol'];
 
-const periodLabels = { p1: 'P1 - First Period', p2: 'P2 - Second Period', p3: 'P3 - Third Period', p4: 'P4 - Fourth Period', p5: 'P5 - Fifth Period', p6: 'P6 - Sixth Period', p7: 'P7 - Seventh Period', p8: 'P8 - Eighth Period', };
+const periodLabels: Record<string, string> = { p1: 'P1 - First Period', p2: 'P2 - Second Period', p3: 'P3 - Third Period', p4: 'P4 - Fourth Period', p5: 'P5 - Fifth Period', p6: 'P6 - Sixth Period', p7: 'P7 - Seventh Period', p8: 'P8 - Eighth Period', };
 
-const activityLabels = { ioqm: 'IOQM', nsep: 'NSEP', schol: 'Schol', };
+const activityLabels: Record<string, string> = { ioqm: 'IOQM', nsep: 'NSEP', schol: 'Schol', };
 
 if (isLoading) return ( <motion.div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" initial={{ opacity: 0 }} animate={{ opacity: 1 }}> <motion.div className="bg-white rounded-xl shadow-2xl p-8" initial={{ scale: 0.9 }} animate={{ scale: 1 }}> <div className="text-center">Loading...</div> </motion.div> </motion.div> );
 
@@ -37,7 +37,7 @@ return ( <AnimatePresence> {isVisible && ( <motion.div className="fixed inset-0 
             {(section === 'school' ? schoolPeriods : whatididActivities).map((key, i) => (
               <motion.div key={key} className="bg-gray-50 border border-gray-300 rounded-xl p-4 shadow-sm" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
                 <Label className="block text-sm font-medium text-gray-700 mb-2">
-                  {section === 'school' ? periodLabels[key] : activityLabels[key]}
+                  {(section === 'school' ? periodLabels[key] : activityLabels[key]) ?? key.toUpperCase()}
                 </Label>
                 <Textarea
                   className="w-full text-black placeholder:text-gray-400 resize-none overflow-hidden bg-white rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent p-2"
