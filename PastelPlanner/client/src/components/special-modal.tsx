@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { motion, AnimatePresence } from "framer-motion";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { apiRequest } from "@/lib/queryClient";
@@ -13,26 +12,21 @@ interface SpecialModalProps {
 }
 
 export default function SpecialModal({ type, isAdmin, onClose, onContentChange }: SpecialModalProps) {
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
   const [content, setContent] = useState('');
+  const [showHint, setShowHint] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const queryClient = useQueryClient();
   const modalRef = useRef<HTMLDivElement>(null);
 
   const apiType = type === 'holiday' ? 'holiday_homework' : 'what_had_done';
   const title = type === 'holiday' ? 'Holiday Homework' : 'What I Had Done';
 
-  // Fetch existing content
-  const { data, isLoading } = useQuery({
-    queryKey: [`/api/special/${apiType}`],
-  });
+  const { data, isLoading } = useQuery({ queryKey: [`/api/special/${apiType}`] });
 
-  // Mutation to save content
   const saveMutation = useMutation({
     mutationFn: async (content: string) => {
-      return await apiRequest('POST', '/api/special', {
-        type: apiType,
-        content
-      });
+      return await apiRequest('POST', '/api/special', { type: apiType, content });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/special/${apiType}`] });
@@ -41,30 +35,24 @@ export default function SpecialModal({ type, isAdmin, onClose, onContentChange }
   });
 
   useEffect(() => {
-    setIsVisible(true);
-    
-    // Set initial content when data is loaded
     if (data && typeof data === 'object' && 'content' in data) {
       setContent((data as any).content || '');
     }
+    const hintTimeout = setTimeout(() => setShowHint(true), 2000);
+    return () => clearTimeout(hintTimeout);
   }, [data]);
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        handleClose();
-      }
+      if (e.key === 'Escape') handleClose();
     };
-
     const handleClickOutside = (e: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
         handleClose();
       }
     };
-
     document.addEventListener('keydown', handleEscape);
     document.addEventListener('mousedown', handleClickOutside);
-
     return () => {
       document.removeEventListener('keydown', handleEscape);
       document.removeEventListener('mousedown', handleClickOutside);
@@ -78,82 +66,122 @@ export default function SpecialModal({ type, isAdmin, onClose, onContentChange }
 
   const handleContentChange = (value: string) => {
     setContent(value);
-    
-    // Auto-save when admin makes changes
-    if (isAdmin) {
-      saveMutation.mutate(value);
+    if (isAdmin) saveMutation.mutate(value);
+  };
+
+  const renderContent = (text: string) => {
+    const urlRegex = /((https?:\/\/)?[\w.-]+\.[a-z]{2,}(\S*)?)/gi;
+    const imgRegex = /{(https?:.*\.(?:png|jpg|jpeg|gif))}/gi;
+
+    const elements: (JSX.Element | string)[] = [];
+    let lastIndex = 0;
+    const combinedRegex = new RegExp(`${imgRegex.source}|${urlRegex.source}`, 'gi');
+    let match;
+
+    while ((match = combinedRegex.exec(text)) !== null) {
+      const matchText = match[0];
+      const matchIndex = match.index;
+
+      if (matchIndex > lastIndex) {
+        elements.push(text.slice(lastIndex, matchIndex));
+      }
+
+      if (imgRegex.test(matchText)) {
+        const url = matchText.replace(/[{}]/g, '');
+        elements.push(
+          <img
+            key={matchIndex}
+            src={url}
+            alt="img"
+            className="my-2 max-h-60 w-auto rounded-xl border border-gray-300"
+            onError={(e) => (e.currentTarget.style.display = 'none')}
+          />
+        );
+      } else {
+        const url = matchText.startsWith("http") ? matchText : `https://${matchText}`;
+        elements.push(
+          <a
+            key={matchIndex}
+            href={url}
+            className="text-blue-600 underline"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {matchText}
+          </a>
+        );
+      }
+
+      lastIndex = combinedRegex.lastIndex;
     }
+
+    if (lastIndex < text.length) {
+      elements.push(text.slice(lastIndex));
+    }
+
+    return elements;
   };
 
   if (isLoading) {
     return (
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-        <div className="bg-white rounded-2xl shadow-2xl p-8">
-          <div className="text-center">Loading...</div>
-        </div>
+      <div className="fixed inset-0 bg-white flex items-center justify-center z-50">
+        Loading...
       </div>
     );
   }
 
   return (
-    <AnimatePresence>
-      {isVisible && (
-        <motion.div 
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
+    isVisible && (
+      <div className={`fixed inset-0 bg-white z-50 overflow-y-auto p-4 flex justify-center items-start ${isFullscreen ? 'h-screen' : ''}`}>
+        <div
+          ref={modalRef}
+          className={`w-full ${isFullscreen ? 'h-full' : 'sm:w-11/12'} max-w-4xl bg-white rounded-xl shadow-xl border border-gray-300`}
         >
-          <motion.div 
-            ref={modalRef}
-            className="bg-white/95 backdrop-blur-lg rounded-3xl shadow-2xl w-full max-w-3xl mx-4 max-h-[90vh] overflow-hidden border border-white/30"
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            transition={{ 
-              type: "spring",
-              stiffness: 300,
-              damping: 25,
-              duration: 0.4
-            }}
-          >
-            {/* Header */}
-            <div className={`${type === 'holiday' ? 'bg-pastel-pink' : 'bg-pastel-lavender'} px-6 py-5 flex justify-between items-center backdrop-blur-lg`}>
-              <h3 className="text-xl font-semibold text-foreground title-font">{title}</h3>
-              <motion.button
+          {/* Header */}
+          <div className={`px-6 py-4 ${type === 'holiday' ? 'bg-pastel-pink' : 'bg-pastel-lavender'} flex justify-between items-center`}>
+            <h3 className="text-xl font-semibold text-gray-900">{title}</h3>
+            <div className="space-x-2">
+              <button
+                onClick={() => setIsFullscreen(!isFullscreen)}
+                className="text-sm bg-white text-black border rounded px-2 py-1 hover:bg-black hover:text-white"
+              >
+                {isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+              </button>
+              <button
                 onClick={handleClose}
-                className="text-foreground hover:text-muted-foreground text-2xl font-bold w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/20 transition-all"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
+                className="text-gray-700 text-2xl font-bold hover:text-red-500"
               >
                 ×
-              </motion.button>
+              </button>
             </div>
+          </div>
 
-            {/* Content */}
-            <div className="p-6">
-              <motion.div 
-                className={`${type === 'holiday' ? 'bg-pastel-pink/30' : 'bg-pastel-lavender/30'} rounded-2xl p-6 border border-white/50 backdrop-blur-sm`}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, duration: 0.3 }}
-              >
-                <Label className="block text-lg font-semibold mb-4 label-font period-label">
-                  {title} Details
-                </Label>
-                <Textarea
-                  className={`modal-textarea resize-none min-h-[300px] body-font transition-all duration-200 ${!isAdmin ? 'cursor-not-allowed opacity-60' : ''}`}
-                  value={content}
-                  onChange={(e) => handleContentChange(e.target.value)}
-                  placeholder={`Enter ${title.toLowerCase()} details...`}
-                  readOnly={!isAdmin}
-                />
-              </motion.div>
+          {/* Hint */}
+          {showHint && (
+            <div className="text-right px-6 pt-2 text-sm text-gray-500 animate-pulse">
+              💡 Bhai tu SCROLL kar sakta hai
             </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+          )}
+
+          {/* Content */}
+          <div className="p-6">
+            <Label className="block mb-2 font-medium text-sm text-gray-700">{title} Details</Label>
+            {isAdmin ? (
+              <Textarea
+                className="w-full resize-none text-black placeholder-gray-500 bg-white border border-gray-300 rounded-md px-3 py-2 text-sm"
+                value={content}
+                onChange={(e) => handleContentChange(e.target.value)}
+                placeholder={`Enter ${title.toLowerCase()} details...`}
+                rows={6}
+              />
+            ) : (
+              <div className="text-black text-sm leading-relaxed break-words">
+                {renderContent(content)}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    )
   );
 }
