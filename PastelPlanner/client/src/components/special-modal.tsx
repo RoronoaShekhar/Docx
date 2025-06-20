@@ -15,8 +15,6 @@ export default function SpecialModal({ type, isAdmin, onClose, onContentChange }
   const [isVisible, setIsVisible] = useState(true);
   const [content, setContent] = useState('');
   const [showHint, setShowHint] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const queryClient = useQueryClient();
   const modalRef = useRef<HTMLDivElement>(null);
@@ -24,7 +22,9 @@ export default function SpecialModal({ type, isAdmin, onClose, onContentChange }
   const apiType = type === 'holiday' ? 'holiday_homework' : 'what_had_done';
   const title = type === 'holiday' ? 'Holiday Homework' : 'What I Had Done';
 
-  const { data, isLoading } = useQuery({ queryKey: [`/api/special/${apiType}`] });
+  const { data, isLoading } = useQuery({
+    queryKey: [`/api/special/${apiType}`],
+  });
 
   const saveMutation = useMutation({
     mutationFn: async (content: string) => {
@@ -134,23 +134,21 @@ export default function SpecialModal({ type, isAdmin, onClose, onContentChange }
 
   return (
     isVisible && (
-      <div className={`fixed inset-0 bg-white z-50 overflow-y-auto p-4 flex justify-center items-start `}>
+      <div className="fixed inset-0 bg-white z-50 overflow-y-auto p-4 flex justify-center items-start">
         <div
           ref={modalRef}
-          className={`w-full ${isFullscreen ? 'h-full' : 'sm:w-11/12'} max-w-4xl bg-white rounded-xl shadow-xl border border-gray-300`}
+          className="w-full sm:w-11/12 max-w-4xl bg-white rounded-xl shadow-xl border border-gray-300"
         >
           {/* Header */}
           <div className={`px-6 py-4 ${type === 'holiday' ? 'bg-pastel-pink' : 'bg-pastel-lavender'} flex justify-between items-center`}>
             <h3 className="text-xl font-semibold text-gray-900">{title}</h3>
-            <div className="space-x-2">
-              <button
-                onClick={handleClose}
-                className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 hover:bg-red-500 hover:text-white transition"
-                aria-label="Close"
-              >
-                <span className="text-xl font-bold">×</span>
-              </button>
-            </div>
+            <button
+              onClick={handleClose}
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 hover:bg-red-500 hover:text-white transition"
+              aria-label="Close"
+            >
+              <span className="text-xl font-bold">×</span>
+            </button>
           </div>
 
           {/* Hint */}
