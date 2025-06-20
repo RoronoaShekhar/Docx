@@ -12,8 +12,13 @@ interface DateModalProps {
   onContentChange: () => void;
 }
 
-export default function DateModal({ date, section, isAdmin, onClose, onContentChange }: DateModalProps) {
-  const [isVisible, setIsVisible] = useState(true);
+export default function DateModal({
+  date,
+  section,
+  isAdmin,
+  onClose,
+  onContentChange,
+}: DateModalProps) {
   const [formData, setFormData] = useState<any>({});
   const [showHint, setShowHint] = useState(false);
   const queryClient = useQueryClient();
@@ -108,24 +113,26 @@ export default function DateModal({ date, section, isAdmin, onClose, onContentCh
   if (isLoading) return <div className="fixed inset-0 bg-white flex items-center justify-center z-50">Loading...</div>;
 
   return (
-    <div className={`fixed inset-0 bg-white z-50 overflow-y-auto p-4 flex justify-center items-start `}>
-      <div ref={modalRef} className={`w-full ${isFullscreen ? 'h-full' : 'sm:w-11/12'} max-w-5xl bg-white rounded-xl shadow-xl border border-gray-300`}>
+    <div className="fixed inset-0 bg-white z-50 overflow-y-auto p-4 flex justify-center items-start">
+      <div ref={modalRef} className="w-full sm:w-11/12 max-w-5xl bg-white rounded-xl shadow-xl border border-gray-300">
         <div className={`px-6 py-4 ${section === 'school' ? 'bg-pastel-mint' : 'bg-pastel-lavender'} flex justify-between items-center`}>
           <h3 className="text-xl font-semibold text-gray-900">
             {section === 'school' ? 'School' : 'What I Did'} - {formattedDate}
           </h3>
-          <div className="space-x-2">
-            <button
-              onClick={handleClose}
-              className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 hover:bg-red-500 hover:text-white transition"
-              aria-label="Close"
-            >
-              <span className="text-xl font-bold">×</span>
-            </button>
-          </div>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 hover:bg-red-500 hover:text-white transition"
+            aria-label="Close"
+          >
+            <span className="text-xl font-bold">×</span>
+          </button>
         </div>
 
-        {showHint && <div className="text-right px-6 pt-2 text-sm text-gray-500 animate-pulse">💡 Bhai tu SCROLL kar sakta hai</div>}
+        {showHint && (
+          <div className="text-right px-6 pt-2 text-sm text-gray-500 animate-pulse">
+            💡 Bhai tu SCROLL kar sakta hai
+          </div>
+        )}
 
         <div className="p-6">
           {(section === 'school' ? schoolPeriods : whatididActivities).map((key, index) => (
