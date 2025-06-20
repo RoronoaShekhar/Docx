@@ -15,6 +15,8 @@ export default function SpecialModal({ type, isAdmin, onClose, onContentChange }
   const [isVisible, setIsVisible] = useState(true);
   const [content, setContent] = useState('');
   const [showHint, setShowHint] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
   const queryClient = useQueryClient();
   const modalRef = useRef<HTMLDivElement>(null);
 
