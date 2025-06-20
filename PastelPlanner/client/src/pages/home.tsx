@@ -14,13 +14,10 @@ export default function Home() {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [showSpecialModal, setShowSpecialModal] = useState<'holiday' | 'whathaddone' | null>(null);
-	// ✅ Automatically use the real current month (e.g. July 2025 if today is July 19)
-	const today = new Date();
-	const initialMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-	const [schoolCurrentMonth, setSchoolCurrentMonth] = useState(initialMonth);
-	const [whatididCurrentMonth, setWhatididCurrentMonth] = useState(initialMonth);
-  const { toast } = useToast();
-
+  const today = new Date();
+  const lastYearSameMonth = new Date(today.getFullYear() - 1, today.getMonth(), 1);
+  const [schoolCurrentMonth, setSchoolCurrentMonth] = useState(lastYearSameMonth);
+  const [whatididCurrentMonth, setWhatididCurrentMonth] = useState(lastYearSameMonth);
   const handleAdminToggle = () => {
     if (!isAdmin) {
       setShowLoginModal(true);
