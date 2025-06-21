@@ -12,7 +12,6 @@ interface SpecialModalProps {
 }
 
 export default function SpecialModal({ type, isAdmin, onClose, onContentChange }: SpecialModalProps) {
-  const [isVisible, setIsVisible] = useState(true);
   const [content, setContent] = useState('');
   const [showHint, setShowHint] = useState(false);
   const queryClient = useQueryClient();
@@ -21,12 +20,13 @@ export default function SpecialModal({ type, isAdmin, onClose, onContentChange }
   const apiType = type === 'holiday' ? 'holiday_homework' : 'what_had_done';
   const title = type === 'holiday' ? 'Holiday Homework' : 'What I Had Done';
 
-  const { data, isLoading } = useQuery({ queryKey: [`/api/special/${apiType}`] });
+  const { data, isLoading } = useQuery({
+    queryKey: [`/api/special/${apiType}`],
+  });
 
   const saveMutation = useMutation({
-    mutationFn: async (content: string) => {
-      return await apiRequest('POST', '/api/special', { type: apiType, content });
-    },
+    mutationFn: async (content: string) =>
+      apiRequest('POST', '/api/special', { type: apiType, content }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/special/${apiType}`] });
       onContentChange();
@@ -42,9 +42,7 @@ export default function SpecialModal({ type, isAdmin, onClose, onContentChange }
   }, [data]);
 
   useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') handleClose();
-    };
+    const handleEscape = (e: KeyboardEvent) => e.key === 'Escape' && handleClose();
     const handleClickOutside = (e: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(e.target as Node)) handleClose();
     };
@@ -57,8 +55,7 @@ export default function SpecialModal({ type, isAdmin, onClose, onContentChange }
   }, []);
 
   const handleClose = () => {
-    setIsVisible(false);
-    setTimeout(onClose, 300);
+    onClose();
   };
 
   const handleContentChange = (value: string) => {
@@ -67,83 +64,54 @@ export default function SpecialModal({ type, isAdmin, onClose, onContentChange }
   };
 
   const renderContent = (text: string) => {
-    if (!text) return "";
-
-    const lines = text.split('\n');
+    if (!text) return null;
+    const lines = text.split(/\n/);
     const elements: JSX.Element[] = [];
 
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i].trim();
+    lines.forEach((line, idx) => {
+      const trimmed = line.trim();
 
       // Headings
-      if (/^###\s+/.test(line)) {
-        elements.push(<h3 key={i} className="text-base font-semibold mt-3 mb-1">{line.replace(/^###\s+/, '')}</h3>);
-        continue;
-      }
-      if (/^##\s+/.test(line)) {
-        elements.push(<h2 key={i} className="text-lg font-bold mt-4 mb-2">{line.replace(/^##\s+/, '')}</h2>);
-        continue;
-      }
-      if (/^#\s+/.test(line)) {
-        elements.push(<h1 key={i} className="text-xl font-bold mt-5 mb-3">{line.replace(/^#\s+/, '')}</h1>);
-        continue;
-      }
+      if (/^###\s+/.test(trimmed)) return elements.push(<h3 key={idx} className="text-base font-bold mt-3">{trimmed.replace(/^###\s+/, '')}</h3>);
+      if (/^##\s+/.test(trimmed)) return elements.push(<h2 key={idx} className="text-lg font-bold mt-4">{trimmed.replace(/^##\s+/, '')}</h2>);
+      if (/^#\s+/.test(trimmed)) return elements.push(<h1 key={idx} className="text-xl font-bold mt-5">{trimmed.replace(/^#\s+/, '')}</h1>);
 
-      const urlRegex = /((https?:\/\/)?[\w.-]+\.[a-z]{2,}(\S*)?)/gi;
-      const imgRegex = /{(https?:.*\.(?:png|jpg|jpeg|gif))}/gi;
-      const combinedRegex = new RegExp(`${imgRegex.source}|${urlRegex.source}`, 'gi');
-
-      const inlineElements: (string | JSX.Element)[] = [];
-      let lastIndex = 0;
-      let match;
-
-      while ((match = combinedRegex.exec(line)) !== null) {
-        const matchText = match[0];
-        const matchIndex = match.index;
-        if (matchIndex > lastIndex) {
-          inlineElements.push(line.slice(lastIndex, matchIndex));
-        }
-
-        // Use non-global test to fix multiple images issue
-        if (/^{https?:.*\.(?:png|jpg|jpeg|gif)}$/i.test(matchText)) {
-          const url = matchText.replace(/[{}]/g, '');
-          inlineElements.push(
-            <img
-              key={`img-${i}-${matchIndex}`}
-              src={url}
-              alt="img"
-              className="my-2 max-h-60 w-auto rounded-xl border border-gray-300"
-              onError={(e) => (e.currentTarget.style.display = 'none')}
-            />
-          );
-        } else {
-          const url = matchText.startsWith("http") ? matchText : `https://${matchText}`;
-          inlineElements.push(
-            <a
-              key={`link-${i}-${matchIndex}`}
-              href={url}
-              className="text-blue-600 underline"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {matchText}
-            </a>
-          );
-        }
-
-        lastIndex = combinedRegex.lastIndex;
-      }
-
-      if (lastIndex < line.length) {
-        inlineElements.push(line.slice(lastIndex));
-      }
-
-      elements.push(
-        <p key={i} className="mb-2 text-sm text-black leading-relaxed break-words">
-          {inlineElements}
-        </p>
+      // Checklists
+      if (/^- /.test(trimmed)) return elements.push(
+        <div key={idx}><input type="checkbox" disabled className="mr-2" />{trimmed.replace(/^- \s*/, '')}</div>
       );
-    }
+      if (/^- x/i.test(trimmed)) return elements.push(
+        <div key={idx} className="line-through text-gray-600"><input type="checkbox" checked disabled className="mr-2" />{trimmed.replace(/^- x\s*/i, '')}</div>
+      );
+
+      // Inline images
+      const imgMatches = [...trimmed.matchAll(/{(https?:[^\s{}]+\.(?:jpg|jpeg|png|gif))}/gi)];
+      if (imgMatches.length) {
+        let last = 0;
+        const parts: (string | JSX.Element)[] = [];
+        imgMatches.forEach(m => {
+          const i = m.index || 0;
+          parts.push(trimmed.slice(last, i));
+          parts.push(<img key={`${idx}-${i}`} src={m[1]} alt="img" className="my-2 max-h-60 rounded-xl" onError={e => e.currentTarget.style.display = 'none'} />);
+          last = i + m[0].length;
+        });
+        parts.push(trimmed.slice(last));
+        return elements.push(<div key={idx}>{parts}</div>);
+      }
+
+      // Links
+      const inline: (string | JSX.Element)[] = [];
+      const urlRegex = /((https?:\/\/)?[\w.-]+\.[a-z]{2,}(\S*)?)/gi;
+      let last = 0, match;
+      while ((match = urlRegex.exec(trimmed)) !== null) {
+        if (match.index > last) inline.push(trimmed.slice(last, match.index));
+        const url = match[0].startsWith('http') ? match[0] : `https://${match[0]}`;
+        inline.push(<a key={`${idx}-${match.index}`} href={url} className="text-blue-600 underline" target="_blank" rel="noopener noreferrer">{match[0]}</a>);
+        last = urlRegex.lastIndex;
+      }
+      if (last < trimmed.length) inline.push(trimmed.slice(last));
+      elements.push(<p key={idx} className="mb-2 text-sm text-black break-words">{inline}</p>);
+    });
 
     return elements;
   };
@@ -159,7 +127,10 @@ export default function SpecialModal({ type, isAdmin, onClose, onContentChange }
   return (
     isVisible && (
       <div className="fixed inset-0 bg-white z-50 overflow-y-auto p-4 flex justify-center items-start">
-        <div ref={modalRef} className="w-full sm:w-11/12 max-w-4xl bg-white rounded-xl shadow-xl border border-gray-300">
+        <div
+          ref={modalRef}
+          className="w-full sm:w-11/12 max-w-4xl bg-white rounded-xl shadow-xl border border-gray-300"
+        >
           {/* Header */}
           <div className={`px-6 py-4 ${type === 'holiday' ? 'bg-pastel-pink' : 'bg-pastel-lavender'} flex justify-between items-center`}>
             <h3 className="text-xl font-semibold text-gray-900">{title}</h3>
@@ -191,7 +162,7 @@ export default function SpecialModal({ type, isAdmin, onClose, onContentChange }
                 rows={6}
               />
             ) : (
-              <div className="text-black text-sm leading-relaxed break-words">
+              <div className="text-black">
                 {renderContent(content)}
               </div>
             )}
