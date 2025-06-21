@@ -12,15 +12,11 @@ interface DateModalProps {
   onContentChange: () => void;
 }
 
-export default function DateModal({
-  date,
-  section,
-  isAdmin,
-  onClose,
-  onContentChange,
-}: DateModalProps) {
+export default function DateModal({ date, section, isAdmin, onClose, onContentChange }: DateModalProps) {
+  const [isVisible, setIsVisible] = useState(true);
   const [formData, setFormData] = useState<any>({});
   const [showHint, setShowHint] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const queryClient = useQueryClient();
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -71,7 +67,7 @@ export default function DateModal({
       const matchText = match[0];
       const matchIndex = match.index;
       if (matchIndex > lastIndex) elements.push(text.slice(lastIndex, matchIndex));
-      if (imgRegex.test(matchText)) {
+      if (/^{https?:.*\.(?:png|jpg|jpeg|gif)}$/i.test(matchText)) {
         const url = matchText.replace(/[{}]/g, "");
         elements.push(
           <img
@@ -113,26 +109,29 @@ export default function DateModal({
   if (isLoading) return <div className="fixed inset-0 bg-white flex items-center justify-center z-50">Loading...</div>;
 
   return (
-    <div className="fixed inset-0 bg-white z-50 overflow-y-auto p-4 flex justify-center items-start">
-      <div ref={modalRef} className="w-full sm:w-11/12 max-w-5xl bg-white rounded-xl shadow-xl border border-gray-300">
+    <div className={`fixed inset-0 bg-white z-50 overflow-y-auto p-4 flex justify-center items-start ${isFullscreen ? 'h-screen' : ''}`}>
+      <div ref={modalRef} className={`w-full ${isFullscreen ? 'h-full' : 'sm:w-11/12'} max-w-5xl bg-white rounded-xl shadow-xl border border-gray-300`}>
         <div className={`px-6 py-4 ${section === 'school' ? 'bg-pastel-mint' : 'bg-pastel-lavender'} flex justify-between items-center`}>
           <h3 className="text-xl font-semibold text-gray-900">
             {section === 'school' ? 'School' : 'What I Did'} - {formattedDate}
           </h3>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 hover:bg-red-500 hover:text-white transition"
-            aria-label="Close"
-          >
-            <span className="text-xl font-bold">×</span>
-          </button>
+          <div className="space-x-2">
+            <button
+              onClick={() => setIsFullscreen(!isFullscreen)}
+              className="text-sm bg-white text-black border rounded px-2 py-1 hover:bg-black hover:text-white"
+            >
+              {isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+            </button>
+            <button
+              onClick={onClose}
+              className="text-gray-700 text-2xl font-bold hover:text-red-500"
+            >
+              ×
+            </button>
+          </div>
         </div>
 
-        {showHint && (
-          <div className="text-right px-6 pt-2 text-sm text-gray-500 animate-pulse">
-            💡 Bhai tu SCROLL kar sakta hai
-          </div>
-        )}
+        {showHint && <div className="text-right px-6 pt-2 text-sm text-gray-500 animate-pulse">💡 Bhai tu SCROLL kar sakta hai</div>}
 
         <div className="p-6">
           {(section === 'school' ? schoolPeriods : whatididActivities).map((key, index) => (
